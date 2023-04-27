@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rive_animation/entry_point.dart';
+import 'package:rive_animation/screens/entry_point/components/side_bar.dart';
+import 'package:rive_animation/screens/entry_point/entry_point.dart';
+import 'package:rive_animation/screens/home/home_screen.dart';
 // import 'package:rive_animation/screens/entryPoint/entry_point.dart';
-import 'package:rive_animation/screens/onboding/onboding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +17,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'The Flutter Way',
+      debugShowCheckedModeBanner: false,
+      scrollBehavior: MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown
+        },
+      ),
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEEF1F8),
         primarySwatch: Colors.blue,

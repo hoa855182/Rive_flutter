@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:rive_animation/components/animate_bar.dart';
 import 'package:rive_animation/constants.dart';
+import 'package:rive_animation/models/rive_assets.dart';
+import 'package:rive_animation/screens/entry_point/components/menu_btn.dart';
+import 'package:rive_animation/screens/entry_point/components/side_bar.dart';
+import 'package:rive_animation/screens/entry_point/components/side_menu.dart';
+import 'package:rive_animation/screens/home/home_screen.dart';
 import 'package:rive_animation/utils/rive_ultis.dart';
 
 class EntryPoint extends StatefulWidget {
@@ -12,9 +18,45 @@ class EntryPoint extends StatefulWidget {
 
 class _EntryPointState extends State<EntryPoint> {
   RiveAsset selectedBottomNav = bottomNav.first;
+  late SMIBool isSideBarClosed;
+  bool isSideMenuClosed = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      body: Stack(
+        children: [
+          Positioned(
+              width: 288,
+              height: MediaQuery.of(context).size.height,
+              child: const SideBar()),
+          Transform.translate(
+            offset: Offset(288, 0),
+            child: Transform.scale(
+                scale: isSideMenuClosed ? 1 : 0.8,
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(24)),
+                    child: const HomeScreen())),
+          ),
+          MenuBtn(
+            riveOnInit: ((artboard) {
+              StateMachineController controller = RiveUtils.getRiveController(
+                artboard,
+                stateMachineName: "State Machine",
+              );
+              isSideBarClosed = controller.findSMI("isOpen") as SMIBool;
+              isSideBarClosed.value = true;
+            }),
+            press: () {
+              isSideBarClosed.value = !isSideBarClosed.value;
+              setState(() {
+                isSideMenuClosed = isSideBarClosed.value;
+              });
+            },
+          )
+        ],
+      ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -77,65 +119,3 @@ class _EntryPointState extends State<EntryPoint> {
     );
   }
 }
-
-class AnimateBar extends StatelessWidget {
-  const AnimateBar({
-    Key? key,
-    required this.selectedBottomNav,
-    required this.isActive,
-  }) : super(key: key);
-
-  final RiveAsset selectedBottomNav;
-  final bool isActive;
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      margin: const EdgeInsets.only(bottom: 2),
-      duration: const Duration(milliseconds: 200),
-      height: 4,
-      width: isActive ? 20 : 0,
-      decoration: const BoxDecoration(
-          color: Color(0xFF81B4FF),
-          borderRadius: BorderRadius.all(
-            Radius.circular(12),
-          )),
-    );
-  }
-}
-
-class RiveAsset {
-  final String artboard, stateMachineName, src;
-  late SMIBool input;
-  RiveAsset({
-    required this.src,
-    required this.artboard,
-    required this.stateMachineName,
-  });
-  set setInput(SMIBool status) {
-    input = status;
-  }
-}
-
-List<RiveAsset> bottomNav = [
-  RiveAsset(
-      src: "assets/RiveAssets/icons.riv",
-      artboard: "CHAT",
-      stateMachineName: "CHAT_Interactivity"),
-  RiveAsset(
-    src: "assets/RiveAssets/icons.riv",
-    artboard: "SEARCH",
-    stateMachineName: "SEARCH_Interactivity",
-  ),
-  RiveAsset(
-      src: "assets/RiveAssets/icons.riv",
-      artboard: "TIMER",
-      stateMachineName: "TIMER_Interactivity"),
-  RiveAsset(
-      src: "assets/RiveAssets/icons.riv",
-      artboard: "BELL",
-      stateMachineName: "BELL_Interactivity"),
-  RiveAsset(
-      src: "assets/RiveAssets/icons.riv",
-      artboard: "USER",
-      stateMachineName: "USER_Interactivity")
-];
