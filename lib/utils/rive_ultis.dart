@@ -33,4 +33,13 @@ class RiveUtils {
     return controller;
   
   }
+   static void chnageSMIBoolState(SMIBool input) {
+    input.change(true);
+    Future.delayed(
+      const Duration(seconds: 1),
+      () {
+        input.change(false);
+      },
+    );
+  }
 }
